@@ -1,38 +1,56 @@
-import java.awt.Dimension;
-import java.awt.Graphics;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+public class Main extends JPanel implements ActionListener, MouseMotionListener {
 
-public class Main extends JFrame {
-    public static void main(String[] args) throws Exception {
-      Main window = new Main();
-      window.run();
+    Stage stage;
+    Point mousePos = null;
+    Timer timer;
+
+    public Main() {
+        stage = new Stage();
+        setPreferredSize(new Dimension(740, 720));
+        setBackground(Color.WHITE);
+
+        addMouseMotionListener(this);
+
+        // Timer triggers update every 300ms
+        timer = new Timer(300, this);
+        timer.start();
     }
 
-    class Canvas extends JPanel {
-      Stage stage = new Stage();
-      public Canvas() {
-        setPreferredSize(new Dimension(1024, 720));
-      }
-
-      @Override
-      public void paint(Graphics g) {
-        stage.paint(g, getMousePosition());
-      }
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        stage.paint(g, mousePos);
     }
 
-    private Main() {
-      this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      Canvas canvas = new Canvas();
-      this.setContentPane(canvas);
-      this.pack();
-      this.setVisible(true);
-    }
-
-    public void run() {
-      while(true) {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        stage.update();
         repaint();
-      }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        mousePos = e.getPoint();
+        repaint();
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        mousePos = e.getPoint();
+        repaint();
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Animals Collecting Food");
+        Main mainPanel = new Main();
+        frame.add(mainPanel);
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+        frame.setVisible(true);
     }
 }
